@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sorting Visualizer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        #controls {
+            margin-bottom: 20px;
+        }
+
+        .array-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .array-element {
+            background-color: blue;
+            color: white;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background-color 0.3s, transform 0.3s;
+            border-radius: 5px;
+            border: 6px solid transparent; 
+            margin: 5px;
+            font-size: 18px;
+        }
+
+        .comparison {
+            border-color: yellow; 
+        }
+
+        .final-position {
+            border-color: green !important;
+        }
+
+        .array-container.animate {
+            animation: highlight 0.5s ease-in-out;
+        }
+
+        @keyframes highlight {
+            0% {
+                background-color: rgba(255, 165, 0, 0.5);
+            }
+            100% {
+                background-color: initial;
+            }
+        }
+
+        button {
+            font-size: 16px;
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div id="controls">
+        <label for="numberInput">Enter numbers:</label>
+        <input type="text" id="numberInput">
+        <button onclick="startSorting('bubble')">Bubble Sort</button>
+        <button onclick="startSorting('selection')">Selection Sort</button>
+    </div>
+
+    <div class="array-container" id="arrayContainer">
+    </div>
+
+    <script>
+        async function startSorting(sortType) {
+            const numbers = document.getElementById('numberInput').value.trim();
+            const url = '/sort';
+            const formData = new FormData();
+            formData.append('numbers', numbers);
+            formData.append('sort_type', sortType);
+
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await response.json();
+                visualizeSorting(data);
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        async function visualizeSorting(sortSteps) {
+            const arrayContainer = document.getElementById('arrayContainer');
+            arrayContainer.innerHTML = '';
+
+            for (const step of sortSteps) {
+                displayArray(step.array, step.final);
+                // await sleep(500); 
+                if (step.compare.length > 0) {
+                    highlightComparison(step.compare[0], step.compare[1]);
+                    await sleep(500); 
+                }
+
+                if (step.final.length > 0) {
+                    highlightFinalPosition(step.final);
+                }
+
+                // await sleep(500); 
+
+                resetBorders();
+                await sleep(100); 
+            }
+
+            arrayContainer.classList.add('animate');
+            await sleep(500); 
+            arrayContainer.classList.remove('animate');
+        }
+
+        function displayArray(array, finalIndices) {
+            const arrayContainer = document.getElementById('arrayContainer');
+            arrayContainer.innerHTML = '';
+
+            array.forEach((number, index) => {
+                const element = document.createElement('div');
+                element.classList.add('array-element');
+                element.innerText = number;
+                if (finalIndices.includes(index)) {
+                    element.classList.add('final-position');
+                }
+                arrayContainer.appendChild(element);
+            });
+        }
+
+        function highlightComparison(index1, index2) {
+            const elements = document.getElementsByClassName('array-element');
+            elements[index1].classList.add('comparison');
+            elements[index2].classList.add('comparison');
+        }
+
+        function highlightFinalPosition(indices) {
+            const elements = document.getElementsByClassName('array-element');
+            for (const index of indices) {
+                elements[index].classList.add('final-position');
+            }
+        }
+
+        function resetBorders() {
+            const elements = document.getElementsByClassName('array-element');
+            for (const element of elements) {
+                element.classList.remove('comparison');
+                // Do not remove final-position class to keep the green border
+            }
+        }
+
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+    </script>
+</body>
+</html>
