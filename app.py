@@ -76,4 +76,4 @@ def sort():
     return jsonify(sort_steps)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=False)
