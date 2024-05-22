@@ -79,11 +79,13 @@
         <button onclick="startSorting('selection')">Selection Sort</button>
     </div>
 
-    <div class="array-container" id="arrayContainer">
-    </div>
+    <div class="array-container" id="arrayContainer"></div>
 
     <script>
+        let timer; 
+
         async function startSorting(sortType) {
+            clearTimeout(timer); 
             const numbers = document.getElementById('numberInput').value.trim();
             const url = '/sort';
             const formData = new FormData();
@@ -108,24 +110,22 @@
 
             for (const step of sortSteps) {
                 displayArray(step.array, step.final);
-                // await sleep(500); 
+
                 if (step.compare.length > 0) {
                     highlightComparison(step.compare[0], step.compare[1]);
-                    await sleep(500); 
+                    await sleepWithReset(500);
                 }
 
                 if (step.final.length > 0) {
                     highlightFinalPosition(step.final);
                 }
 
-                // await sleep(500); 
-
                 resetBorders();
-                await sleep(100); 
+                await sleepWithReset(100);
             }
 
             arrayContainer.classList.add('animate');
-            await sleep(500); 
+            await sleepWithReset(500);
             arrayContainer.classList.remove('animate');
         }
 
@@ -161,13 +161,19 @@
             const elements = document.getElementsByClassName('array-element');
             for (const element of elements) {
                 element.classList.remove('comparison');
-                // Do not remove final-position class to keep the green border
             }
         }
 
-        function sleep(ms) {
-            return new Promise(resolve => setTimeout(resolve, ms));
+        function sleepWithReset(ms) {
+            return new Promise(resolve => {
+                clearTimeout(timer); 
+                timer = setTimeout(resolve, ms); 
+            });
         }
+
+        document.addEventListener('click', () => {
+            clearTimeout(timer); 
+        });
     </script>
 </body>
 </html>
