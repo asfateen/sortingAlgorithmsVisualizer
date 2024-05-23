@@ -29,6 +29,49 @@ def bubble_sort(numbers):
         })
     return steps
 
+
+def optimized_bubble_sort(numbers):
+    steps = []
+    n = len(numbers)
+    final = []
+
+    for i in range(n):
+        swapped = False
+        for j in range(0, n-i-1):
+            steps.append({
+                'array': numbers.copy(),
+                'compare': (j, j+1),
+                'final': final[:]
+            })
+            if numbers[j] > numbers[j+1]:
+                numbers[j], numbers[j+1] = numbers[j+1], numbers[j]
+                swapped = True
+            steps.append({
+                'array': numbers.copy(),
+                'compare': [],
+                'final': final[:]
+            })
+
+        if not swapped:
+            final = list(range(n))
+            steps.append({
+                'array': numbers.copy(),
+            'compare': [],
+            'final': final[:]
+            })
+            return steps
+
+        final.append(n - i - 1)
+        steps.append({
+            'array': numbers.copy(),
+            'compare': [],
+            'final': final[:]
+        })
+        
+
+
+    return steps
+
 def selection_sort(numbers):
     steps = []
     n = len(numbers)
@@ -70,10 +113,12 @@ def sort():
 
     if sort_type == 'bubble':
         sort_steps = bubble_sort(numbers.copy())
+    elif sort_type == 'optimizedBubble':
+        sort_steps= optimized_bubble_sort(numbers.copy())
     elif sort_type == 'selection':
         sort_steps = selection_sort(numbers.copy())
 
     return jsonify(sort_steps)
 
 if __name__ == '__main__':
-    app.run(debug=False)
+    app.run(debug=True)
