@@ -13,10 +13,20 @@
             justify-content: center;
             height: 100vh;
             margin: 0;
+            background-image: url('/static/sortinghat.png');
+            background-size: cover; 
+            background-repeat: no-repeat;
+            background-position: center;
+            color: white; 
         }
 
         #controls {
             margin-bottom: 20px;
+        }
+
+        #controls label,
+        #controls button {
+            color: white; 
         }
 
         .array-container {
@@ -67,12 +77,16 @@
             font-size: 16px;
             padding: 10px 20px;
             cursor: pointer;
+            background-color: #333; 
+            border: none;
+            color: white; 
         }
+
     </style>
 </head>
 <body>
     <div id="controls">
-        <label for="numberInput">Enter numbers seperated by commas:</label>
+        <label for="numberInput">Enter numbers separated by commas:</label>
         <input type="text" id="numberInput">
         <button onclick="startSorting('bubble')">Bubble Sort</button>
         <button onclick="startSorting('optimizedBubble')">Optimized Bubble Sort</button>
